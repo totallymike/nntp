@@ -5,19 +5,20 @@ class NNTPClient
   attr_reader :socket, :status, :current_group,
               :groups
 
-  def initialize(url, port=119)
-    @socket = TCPSocket.new(url, port)
+  def initialize(options = {})
+    @socket = options.fetch(:socket) {
+      url = options.fetch(:url)
+      port = options.fetch(:port, 119)
+      socket_factory = options.fetch(:socket_factory) { TCPSocket }
+      socket_factory.new(url, port)
+    }
     @current_group = nil
     @status = nil
     @groups = nil
   end
 
-  def list_groups
-    send_message "LIST"
-    status = get_status
-    return nil unless status[:code] == 215
-
-    self.groups = get_data_block
+  def groups
+    @groups ||= list_groups
   end
 
   def group(group)
@@ -29,6 +30,14 @@ class NNTPClient
   end
 
   private
+  def list_groups
+    send_message "LIST"
+    status = get_status
+    return nil unless status[:code] == 215
+
+    get_data_block
+  end
+
   def groups=(list=[])
     @groups = list
   end
