@@ -2,8 +2,7 @@ require 'socket'
 require "NNTPClient/version"
 
 class NNTPClient
-  attr_reader :socket, :status, :current_group,
-              :groups
+  attr_reader :socket, :status, :current_group
 
   def initialize(options = {})
     @socket = options.fetch(:socket) {
