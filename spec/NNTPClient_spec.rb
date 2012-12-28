@@ -27,6 +27,10 @@ describe NNTPClient do
       NNTPClient.new(:url => 'nntp.example.org')
     end
 
+    it 'will raise ArgumentError if no :url is found' do
+      expect { NNTPClient.new({}) }.to raise_error ArgumentError
+    end
+
     it 'can use a custom socket factory' do
       url = 'nntp.example.org'
       port = 119
@@ -46,8 +50,7 @@ describe NNTPClient do
     end
   end
 
-  describe '#list' do
-
+  describe '#groups' do
     let (:groups) do
       ["215 list of newsgroups follows\r\n", "alt.bin.foo\r\n",
        "alt.bin.bar\r\n", ".\r\n"]
@@ -74,7 +77,7 @@ describe NNTPClient do
     it 'can select a group from the server' do
       nntp.group group
       nntp.status[:code].should eq 211
-      nntp.current_group.should eq group
+      nntp.current_group.name.should eq group
     end
   end
 end

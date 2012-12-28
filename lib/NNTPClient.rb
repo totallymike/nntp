@@ -1,19 +1,13 @@
 require 'socket'
+require_relative 'group'
 require "NNTPClient/version"
 
 class NNTPClient
   attr_reader :socket, :status, :current_group
 
   def initialize(options = {})
-    @socket = options.fetch(:socket) {
-      url = options.fetch(:url)
-      port = options.fetch(:port, 119)
-      socket_factory = options.fetch(:socket_factory) { TCPSocket }
-      socket_factory.new(url, port)
-    }
-    @current_group = nil
-    @status = nil
-    @groups = nil
+    @socket = open_socket(options)
+    init_attributes
   end
 
   def groups
@@ -24,11 +18,31 @@ class NNTPClient
     send_message "GROUP #{group}"
     self.status = get_status
     if status[:code] == 211
-      self.current_group = status[:params][-1]
+      self.current_group = create_group(status)
     end
   end
 
   private
+  def init_attributes
+    @current_group = nil
+    @status = nil
+    @groups = nil
+  end
+
+  def create_group(status)
+    params = status[:params]
+    Group.new(*params[1..-1])
+  end
+
+  def open_socket(options)
+    options.fetch(:socket) {
+      url = options.fetch(:url) { raise ArgumentError, ':url is required' }
+      port = options.fetch(:port, 119)
+      socket_factory = options.fetch(:socket_factory) { TCPSocket }
+      socket_factory.new(url, port)
+    }
+  end
+
   def list_groups
     send_message "LIST"
     status = get_status
