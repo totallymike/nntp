@@ -7,4 +7,8 @@ class Group
     @last = last
     @count = count
   end
+
+  def inspect
+    name
+  end
 end

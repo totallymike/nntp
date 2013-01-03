@@ -1,5 +1,6 @@
 require 'socket'
 require_relative 'group'
+require_relative 'article'
 require "NNTPClient/version"
 
 class NNTPClient
@@ -22,15 +23,33 @@ class NNTPClient
     end
   end
 
+  def articles
+    @articles ||= fetch_articles
+  end
+
   private
+  def fetch_articles
+    new_articles = []
+    send_message "XHDR Subject #{current_group.first}-"
+    self.status = get_status
+    return nil unless status[:code] == 221
+    get_data_block.each do |line|
+      article_data = line.split(' ', 1)
+      new_articles << Article.new(article_data[0], article_data[1])
+    end
+    new_articles
+  end
+
   def init_attributes
     @current_group = nil
     @status = nil
     @groups = nil
+    @articles = nil
   end
 
   def create_group(status)
     params = status[:params]
+    # TODO: This is ugly
     Group.new(*params[1..-1])
   end
 

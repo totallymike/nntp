@@ -67,6 +67,25 @@ describe NNTPClient do
     end
   end
 
+  describe '#messages' do
+    before(:each) do
+      @sock.should_receive(:print).with("XHDR Subject 1-\r\n")
+      @sock.should_receive(:gets).exactly(4).times.and_return(
+          "221 Subject data follows\r\n", "1 foo\r\n", "2 bar\r\n", ".\r\n"
+      )
+      @sock.should_receive(:print).with
+
+      nntp.stub(:current_group) { Group.new(2,1,2, 'alt.bin.foo.bar') }
+    end
+    it 'can list the messages in current group by subject' do
+      articles = []
+      nntp.articles.each do |article|
+        articles << article.to_s
+      end
+      articles.should eq %w(foo bar)
+    end
+  end
+
   describe '#group' do
     let (:group) do 'alt.bin.foo.bar' end
 
