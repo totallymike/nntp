@@ -34,7 +34,7 @@ class NNTPClient
     self.status = get_status
     return nil unless status[:code] == 221
     get_data_block.each do |line|
-      article_data = line.split(' ', 1)
+      article_data = line.split(' ', 2)
       new_articles << Article.new(article_data[0], article_data[1])
     end
     new_articles
