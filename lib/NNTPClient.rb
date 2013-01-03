@@ -29,13 +29,12 @@ class NNTPClient
 
   private
   def fetch_articles
-    new_articles = []
     send_message "XHDR Subject #{current_group.first}-"
     self.status = get_status
     return nil unless status[:code] == 221
-    new_articles = get_data_block.map do |line|
+    get_data_block.map do |line|
       article_id, article_subject = line.split(' ', 2)
-      Article.new(article_id, article_subject)
+      NNTP::Article.new(article_id, article_subject)
     end
   end
 
@@ -49,7 +48,7 @@ class NNTPClient
   def create_group(status)
     params = status[:params]
     # TODO: This is ugly
-    Group.new(*params[1..-1])
+    NNTP::Group.new(*params[1..-1])
   end
 
   def open_socket(options)

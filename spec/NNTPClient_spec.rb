@@ -44,9 +44,9 @@ describe NNTPClient do
     end
 
     it 'Can accept a given socket' do
-      @sock.stub(:me) { 'See? It works.' }
+      @sock.stub(:foo) { 'See? It works.' }
       client = NNTPClient.new(:socket => @sock)
-      client.socket.me.should eq 'See? It works.'
+      client.socket.foo.should eq 'See? It works.'
     end
   end
 
@@ -77,7 +77,7 @@ describe NNTPClient do
           ["1 foo", "2 bar"]
       )
 
-      nntp.stub(:current_group) { Group.new(2,1,2, 'alt.bin.foo.bar') }
+      nntp.stub(:current_group) { NNTP::Group.new(2,1,2, 'alt.bin.foo.bar') }
       nntp.stub(:send_message)
     end
     it 'can list the messages in current group by subject' do
