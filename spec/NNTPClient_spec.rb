@@ -67,6 +67,15 @@ describe NNTPClient do
     end
   end
 
+  describe '#auth' do
+    before(:each) do
+      @sock.should_receive(:print).with("AUTHINFO USER foo\r\n")
+      @sock.should_receive(:print).with("AUTHINFO PASS bar\r\n")
+    end
+    it 'can use standard AUTHINFO authentication' do
+      nntp.auth :user => 'foo', :pass => 'bar'
+    end
+  end
   describe '#messages' do
     before(:each) do
       # @sock.should_receive(:print).with("XHDR Subject 1-\r\n")

@@ -27,6 +27,10 @@ class NNTPClient
     @articles ||= fetch_articles
   end
 
+  def auth(options = {})
+    send_message "AUTHINFO USER #{options[:user]}"
+    send_message "AUTHINFO PASS #{options[:pass]}"
+  end
   private
   def fetch_articles
     send_message "XHDR Subject #{current_group.first}-"
