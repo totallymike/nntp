@@ -81,10 +81,7 @@ describe NNTPClient do
       nntp.stub(:send_message)
     end
     it 'can list the messages in current group by subject' do
-      articles = []
-      nntp.articles.each do |article|
-        articles << article.to_s
-      end
+      articles = nntp.articles.map {|article| article.to_s}
       articles.should eq %w(foo bar)
     end
   end

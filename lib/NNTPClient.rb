@@ -33,11 +33,10 @@ class NNTPClient
     send_message "XHDR Subject #{current_group.first}-"
     self.status = get_status
     return nil unless status[:code] == 221
-    get_data_block.each do |line|
-      article_data = line.split(' ', 2)
-      new_articles << Article.new(article_data[0], article_data[1])
+    new_articles = get_data_block.map do |line|
+      article_id, article_subject = line.split(' ', 2)
+      Article.new(article_id, article_subject)
     end
-    new_articles
   end
 
   def init_attributes
