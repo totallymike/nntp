@@ -29,7 +29,14 @@ class NNTPClient
 
   def auth(options = {})
     send_message "AUTHINFO USER #{options[:user]}"
+    self.status = get_status
     send_message "AUTHINFO PASS #{options[:pass]}"
+    self.status = get_status
+    if status[:code] == 281
+      true
+    else
+      false
+    end
   end
   private
   def fetch_articles

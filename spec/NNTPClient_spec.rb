@@ -71,11 +71,32 @@ describe NNTPClient do
     before(:each) do
       @sock.should_receive(:print).with("AUTHINFO USER foo\r\n")
       @sock.should_receive(:print).with("AUTHINFO PASS bar\r\n")
+      @sock.should_receive(:gets).exactly(2).times.and_return(
+          "381 Enter passphrase\r\n", "281 Authentication accepted\r\n"
+      )
     end
+
     it 'can use standard AUTHINFO authentication' do
       nntp.auth :user => 'foo', :pass => 'bar'
     end
+
+    it 'returns true upon successful authentication' do
+      nntp.auth(:user => 'foo', :pass => 'bar').should be_true
+      nntp.status[:code].should eq 281
+    end
+
+    it 'returns false if authentication fails' do
+      @sock.rspec_reset
+      nntp.stub(:get_status).and_return(
+          {:code => 381, :message => "Enter passphrase"},
+          {:code => 481, :message => "Authentication failed"}
+      )
+      nntp.stub(:send_message)
+      nntp.auth(:user => 'foo', :pass => 'bar').should be_false
+      nntp.status[:code].should eq 481
+    end
   end
+
   describe '#messages' do
     before(:each) do
       # @sock.should_receive(:print).with("XHDR Subject 1-\r\n")
