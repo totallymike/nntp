@@ -14,7 +14,7 @@ module NNTP
       status = get_status
       data = get_block_data
       yield status, data if block_given?
-      response = {:status => status, :data => data}
+      {:status => status, :data => data}
     end
 
     private

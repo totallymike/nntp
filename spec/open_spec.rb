@@ -2,7 +2,6 @@ require_relative 'spec_helper'
 require "nntp"
 
 describe "NNTP" do
-
   describe "::open" do
     it "accepts an open socket in the parameter hash" do
       sock = double()

@@ -26,7 +26,11 @@ module NNTP
       first_msg = params[1].to_i
       last_msg = params[2].to_i
       can_write = params[3]
-      Group.new(name, first_msg, last_msg, can_write)
+      group.new(name, first_msg, last_msg, can_write)
+    end
+
+    def group
+      NNTP::Group
     end
   end
 end
