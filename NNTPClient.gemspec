@@ -5,7 +5,7 @@ require 'nntp/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "nntp"
-  gem.version       = NNTPClient::VERSION
+  gem.version       = NNTP::VERSION
   gem.authors       = ["Michael Westbom"]
   gem.email         = %w(totallymike@gmail.com)
   gem.description   = %q{Gem to handle basic NNTP usage}
