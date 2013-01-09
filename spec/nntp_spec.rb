@@ -22,5 +22,24 @@ describe "NNTP" do
       foo.should_receive(:new).with('nntp.example.org', 119)
       NNTP.open(:url => 'nntp.example.org', :socket_factory => foo)
     end
+
+    it "yields the session object if a block is given" do
+      sock = double()
+      sock.stub(:print)
+      sock.stub(:gets).and_return("205 closing connection\r\n")
+      expect { |b| NNTP.open( {:socket => sock}, &b ) }.to yield_control
+    end
+
+    it "automatically closes the connection if a block is given" do
+      sock = double()
+      #sock.should_receive(:print)
+      end_status = NNTP.open(:socket => sock) do |nntp|
+        nntp.stub(:connection) do
+          conn = double()
+          conn.should_receive(:command).with(:quit)
+          conn
+        end
+      end
+    end
   end
 end

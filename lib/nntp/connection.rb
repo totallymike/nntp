@@ -17,6 +17,13 @@ module NNTP
       {:status => status, :data => data}
     end
 
+    def command(command, arguments = nil)
+      command = command.to_s.upcase
+      command += " #{arguments}" if arguments
+      send_message(command)
+      get_status
+    end
+
     private
     def build_socket(options)
       options.fetch(:socket) do
@@ -49,8 +56,12 @@ module NNTP
     end
 
     def get_status
-      line = get_line
-      Status.new(*line.split(' ', 2))
+      code, message = get_line.split(' ', 2)
+      status.new(code.to_i, message)
+    end
+
+    def status
+      NNTP::Status
     end
   end
 end
