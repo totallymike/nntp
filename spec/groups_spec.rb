@@ -23,9 +23,12 @@ describe NNTP::Session do
   end
 
   describe "#group=" do
-    it "can change current newsgroup with the assignment operator and a string" do
+    before(:each) do
       sock.stub(:print) {}
       sock.stub(:gets) { "211 2 1 2 alt.bin.foo"}
+    end
+
+    it "can change current newsgroup with the assignment operator and a string" do
       nntp.group = "alt.bin.foo"
       nntp.group.should eq NNTP::Group.new("alt.bin.foo", 1, 2, 2)
     end
