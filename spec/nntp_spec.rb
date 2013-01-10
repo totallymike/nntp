@@ -3,8 +3,9 @@ require "nntp"
 
 describe "NNTP" do
   describe "::open" do
+    let(:sock) { double() }
+
     it "accepts an open socket in the parameter hash" do
-      sock = double()
       conn = NNTP.open(:socket => sock)
       conn.should_not be nil
     end
@@ -27,7 +28,6 @@ describe "NNTP" do
     end
 
     it "yields the session object if a block is given" do
-      sock = double()
       sock.stub(:print)
       sock.stub(:gets).and_return("205 closing connection\r\n")
       sock.stub(:close)
@@ -35,7 +35,6 @@ describe "NNTP" do
     end
 
     it "automatically closes the connection if a block is given" do
-      sock = double()
       NNTP.open(:socket => sock) do |nntp|
         nntp.stub(:connection) do
           conn = double()
