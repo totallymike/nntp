@@ -1,4 +1,5 @@
 require "nntp/group"
+require 'nntp/message'
 
 module NNTP
   class Session
@@ -37,7 +38,9 @@ module NNTP
       messages = []
       connection.query(:listgroup, *args) do |status, data|
         if status[:code] == 211
-          data.each do |message|
+          data.each do |line|
+            message = Message.new
+            message.num = line.to_i
             messages << message
           end
         end
@@ -45,12 +48,16 @@ module NNTP
       messages
     end
 
-    def subjects(range=nil)
+    def subjects
       subjects = []
-      range = range || "#{group[:first_message]}-"
+      range ="#{group[:first_message]}-"
       connection.query(:xhdr, "Subject", range) do |status, data|
         if status[:code] == 221
-          subjects = subjects + data
+          data.each do |line|
+            message = Message.new
+            message.num, message.subject = line.split(' ', 2)
+            subjects << message
+          end
         end
       end
       subjects

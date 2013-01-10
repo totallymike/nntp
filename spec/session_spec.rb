@@ -67,7 +67,7 @@ describe NNTP::Session do
       NNTP::Connection.any_instance.stub(:get_block_data) { %w(1 2) }
       nntp.stub(:group) { NNTP::Group.new("alt.bin.foo", 1, 2, 2) }
 
-      nntp.listgroup.should eq %w(1 2)
+      nntp.listgroup.map {|msg| msg.num }.should eq [1, 2]
     end
     it "retrieves the list of messages from a given group" do
       sock.stub(:print)
@@ -78,11 +78,11 @@ describe NNTP::Session do
       end
       NNTP::Connection.any_instance.stub(:get_block_data) { %w(1 2 3) }
 
-      nntp.listgroup("alt.bin.bar").should eq %w(1 2 3)
+      nntp.listgroup("alt.bin.bar").map { |msg| msg.num }.should eq [1, 2, 3]
     end
   end
   describe "subjects" do
-    let(:subjects) { ["Foo bar", "Baz bang"] }
+    let(:subjects) { ["1 Foo bar", "2 Baz bang"] }
     it "retrieves a list of subjects from the current group" do
       sock.stub(:print)
       NNTP::Connection.any_instance.stub(:get_status) do
@@ -91,7 +91,7 @@ describe NNTP::Session do
       NNTP::Connection.any_instance.stub(:get_block_data) { subjects }
       nntp.stub(:group) { NNTP::Group.new("alt.bin.foo", 1, 2, 2) }
 
-      nntp.subjects.should eq subjects
+      nntp.subjects.map {|msg| msg.subject }.should eq ['Foo bar', 'Baz bang']
     end
   end
 end

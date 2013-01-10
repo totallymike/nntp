@@ -30,11 +30,23 @@ describe "NNTP" do
       end
 
       describe ":ssl => true" do
-        it "builds an SSL connection if :ssl => true" do
-          ssl_double = double()
-          ssl_double.should_receive(:connect)
-          TCPSocket.should_receive(:new).and_return { double() }
+        let(:ssl_double) do
+          socket = double()
+          socket.stub(:connect)
+          socket
+        end
+        before(:each) do
           OpenSSL::SSL::SSLSocket.should_receive(:new).and_return { ssl_double }
+        end
+
+        it "builds an SSL connection if :ssl => true" do
+          TCPSocket.stub(:new) { double() }
+          NNTP.open(:url => 'ssl-nntp.example.org', :ssl => true)
+        end
+
+        it 'uses port 563 as default' do
+          TCPSocket.should_receive(:new).with('ssl-nntp.example.org', 563)
+
           NNTP.open(:url => 'ssl-nntp.example.org', :ssl => true)
         end
       end
