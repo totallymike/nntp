@@ -19,7 +19,7 @@ Or install it yourself as:
 ## Usage
 
 ### Connection
-Two different methods can be usde to connect to a usenet server:
+Two different methods can be used to connect to a usenet server:
 
 1.  First, by supplying a URL and a port number as hash values:
     ```ruby

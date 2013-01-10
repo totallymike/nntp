@@ -8,8 +8,9 @@ module NNTP
       @socket = build_socket(options)
     end
 
-    def query(query)
+    def query(query, *args)
       command = query.to_s.upcase
+      command += " #{args.join(' ')}" unless args.empty?
       send_message(command)
       status = get_status
       data = get_block_data
@@ -22,6 +23,11 @@ module NNTP
       command += " #{arguments}" if arguments
       send_message(command)
       get_status
+    end
+
+    def quit
+      command(:quit)
+      socket.close
     end
 
     private

@@ -1,3 +1,4 @@
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require "nntp/version"
 require "nntp/session"
 require "nntp/connection"
@@ -8,7 +9,7 @@ module NNTP
     session = Session.new(:connection => connection)
     if block_given?
       yield session
-      session.connection.command :quit
+      session.quit
     else
       session
     end

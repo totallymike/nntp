@@ -10,7 +10,7 @@ describe NNTP::Connection do
       sock.stub(:gets).and_return("123 status thing\r\n", "foo\r\n", "bar\r\n", ".\r\n")
       sock.stub(:print)
       response = conn.query(:foo)
-      response[:data].should eq ['foo', 'bar']
+      response[:data].should eq %w(foo bar)
       response[:status][:code].should eq 123
       response[:status][:msg].should eq "status thing"
     end

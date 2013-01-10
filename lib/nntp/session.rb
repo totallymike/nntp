@@ -4,6 +4,7 @@ module NNTP
   class Session
     attr_reader :connection, :group
     def initialize(options)
+      @group = nil
       @connection = options.fetch(:connection) do
         raise ArgumentError ":connection missing"
       end
@@ -24,6 +25,33 @@ module NNTP
         num, low, high, name = status[:msg].split
         @group = group_factory(name, low.to_i, high.to_i, num.to_i)
       end
+    end
+
+    def listgroup(*args)
+      messages = []
+      connection.query(:listgroup, *args) do |status, data|
+        if status[:code] == 211
+          data.each do |message|
+            messages << message
+          end
+        end
+      end
+      messages
+    end
+
+    def subjects(range=nil)
+      subjects = []
+      range = range || group[:first_message]
+      connection.query(:xhdr, "Subject", range) do |status, data|
+        if status[:code] == 221
+          subjects = subjects + data
+        end
+      end
+      subjects
+    end
+
+    def quit
+      connection.quit
     end
 
     private

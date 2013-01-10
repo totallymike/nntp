@@ -27,16 +27,16 @@ describe "NNTP" do
       sock = double()
       sock.stub(:print)
       sock.stub(:gets).and_return("205 closing connection\r\n")
+      sock.stub(:close)
       expect { |b| NNTP.open( {:socket => sock}, &b ) }.to yield_control
     end
 
     it "automatically closes the connection if a block is given" do
       sock = double()
-      #sock.should_receive(:print)
-      end_status = NNTP.open(:socket => sock) do |nntp|
+      NNTP.open(:socket => sock) do |nntp|
         nntp.stub(:connection) do
           conn = double()
-          conn.should_receive(:command).with(:quit)
+          conn.should_receive(:quit)
           conn
         end
       end
