@@ -41,7 +41,7 @@ module NNTP
 
     def subjects(range=nil)
       subjects = []
-      range = range || group[:first_message]
+      range = range || "#{group[:first_message]}-"
       connection.query(:xhdr, "Subject", range) do |status, data|
         if status[:code] == 221
           subjects = subjects + data
@@ -58,8 +58,8 @@ module NNTP
     def group_from_list(group_string)
       params = group_string.split
       name = params[0]
-      low_water_mark = params[1].to_i
-      high_water_mark = params[2].to_i
+      high_water_mark = params[1].to_i
+      low_water_mark = params[2].to_i
       group_factory(name, low_water_mark, high_water_mark)
     end
 
