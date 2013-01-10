@@ -5,6 +5,12 @@ describe NNTP::Session do
   let(:sock) { double() }
   let(:nntp) { NNTP.open(:socket => sock) }
 
+  describe "#initialize" do
+    it "will raise ArgumentError if no connection is found" do
+      expect { NNTP::Session.new() }.to raise_error(ArgumentError)
+    end
+  end
+
   describe "authorization" do
     it "will use authinfo style authentication if a user and pass are provided" do
       NNTP::Session.any_instance.should_receive(:auth).
