@@ -1,3 +1,3 @@
-class NNTPClient
+module NNTP
   VERSION = "0.0.1"
 end
