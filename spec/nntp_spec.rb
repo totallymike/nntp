@@ -11,8 +11,8 @@ describe "NNTP" do
     end
 
     it "will open its own socket if given a url and a port number" do
-      TCPSocket.should_receive(:new).with("nntp.example.org", 119)
-      conn = NNTP.open(:url => 'nntp.example.org', :port => 119)
+      TCPSocket.should_receive(:new).with("nntp.example.org", 120)
+      conn = NNTP.open(:url => 'nntp.example.org', :port => 120)
       conn.should_not be nil
     end
 
