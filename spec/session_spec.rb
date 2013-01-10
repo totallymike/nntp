@@ -11,7 +11,7 @@ describe NNTP::Session do
       nntp.stub(:connection) { @connection }
     end
     it "should return a list of groups" do
-      @connection.stub(:query).and_yield({:code=>215}, ["alt.bin.foo 1 2 y", "alt.bin.bar 1 2 n"])
+      @connection.stub(:query).and_yield({:code=>215}, ["alt.bin.foo 2 1 y", "alt.bin.bar 2 1 n"])
       groups = [ NNTP::Group.new('alt.bin.foo', 1, 2), NNTP::Group.new('alt.bin.bar', 1, 2)]
       nntp.groups.should eq groups
     end
