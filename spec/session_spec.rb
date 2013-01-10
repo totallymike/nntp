@@ -5,6 +5,18 @@ describe NNTP::Session do
   let(:sock) { double() }
   let(:nntp) { NNTP.open(:socket => sock) }
 
+  describe "authorization" do
+    it "will use authinfo style authentication if a user and pass are provided" do
+      NNTP::Session.any_instance.should_receive(:auth).
+          with({:user => 'foo', :pass => 'bar'}).and_call_original
+      NNTP::Session.any_instance.should_receive(:standard_auth)
+      NNTP.open(
+          :socket => sock,
+          :auth => {:user => 'foo', :pass => 'bar'}
+      )
+    end
+  end
+
   describe "#groups" do
     before(:each) do
       @connection = double()
