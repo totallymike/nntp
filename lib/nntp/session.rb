@@ -2,8 +2,14 @@ require "nntp/group"
 require 'nntp/message'
 
 module NNTP
+  # Most of the action happens here.  This class describes the
+  # object the user interacts with the most.
+  # It is constructed by NNTP::open, but you can build your own
+  # if you like.
   class Session
     attr_reader :connection, :group
+    # @option options [NNTP::Connection, NNTP::SSLConnection] :connection
+    #   The connection object.
     def initialize(options)
       @group = nil
       @connection = options.fetch(:connection) do
@@ -12,15 +18,31 @@ module NNTP
       check_initial_status
     end
 
+    # Authenticate to the server.
+    #
+    # @option args :user Username
+    # @option args :pass Password
+    # @option args :type (:standard)
+    #   Which authentication type to use.  Currently only
+    #   standard is supported.
+    # @return [NNTP::Status]
     def auth(args)
       auth_method = args.fetch(:type, :standard)
       standard_auth(args) if auth_method == :standard
     end
 
+    # Fetches and returns the list of groups from the server or, if it
+    # has already been fetched, returns the saved list.
+    # @return [Array<NNTP::Group>]
     def groups
       @groups ||= fetch_groups
     end
 
+    # @!attribute [rw] group
+    #   Retrieves current group, or
+    #   sets current group, server-side, to assigned value.
+    #   @param [String] group_name The name of the group to be selected.
+    #   @return [NNTP::Group] The current group.
     def group=(group_name)
       connection.command(:group, group_name)
       if status[:code] == 211
@@ -29,6 +51,12 @@ module NNTP
       end
     end
 
+    # Fetch list of message numbers from a given group.
+    # @param group  The name of the group to list defaults to {#group #group.name}
+    # @param range (nil) If given, specifies the range of messages to retrieve
+    # @return [Array<NNTP::Message>] The list of messages
+    #   (only the message numbers will be populated).
+    # @see https://tools.ietf.org/html/rfc3977#section-6.1.2
     def listgroup(*args)
       messages = []
       connection.query(:listgroup, *args) do |status, data|
@@ -43,6 +71,9 @@ module NNTP
       messages
     end
 
+    # Fetch list of messages from current group.
+    # @return [Array<NNTP::Message>] The list of messages
+    #   (The numbers AND the subjects will be populated).
     def subjects
       subjects = []
       range ="#{group[:first_message]}-"
@@ -58,10 +89,12 @@ module NNTP
       subjects
     end
 
+    # The most recent status from the server.
     def status
       connection.status
     end
 
+    # (see NNTP::Connection#quit)
     def quit
       connection.quit
     end

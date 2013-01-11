@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'nntp/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "nntp"
+  gem.name          = "nntp-client"
   gem.version       = NNTP::VERSION
   gem.authors       = ["Michael Westbom"]
   gem.email         = %w(totallymike@gmail.com)
