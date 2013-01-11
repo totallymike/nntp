@@ -10,8 +10,7 @@ module NNTP
     end
 
     def query(query, *args)
-      command = query.to_s.upcase
-      command += " #{args.join(' ')}" unless args.empty?
+      command = form_message(query, args)
       send_message(command)
       status = get_status
       data = get_block_data
@@ -19,9 +18,8 @@ module NNTP
       {:status => status, :data => data}
     end
 
-    def command(command, arguments = nil)
-      command = command.to_s.upcase
-      command += " #{arguments}" if arguments
+    def command(command, *args)
+      command = form_message(command, args)
       send_message(command)
       get_status
     end
@@ -37,6 +35,11 @@ module NNTP
     end
 
     private
+    def form_message(command, *args)
+      message = "#{command.to_s.upcase}"
+      message += " #{args.join(' ')}" unless args.empty?
+    end
+
     def build_socket(options)
       options.fetch(:socket) do
         url = options.fetch(:url) do
