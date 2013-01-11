@@ -10,9 +10,13 @@ module NNTP
         raise ArgumentError ":url missing"
       end
       port = args.fetch(:port, 563)
-      socket = OpenSSL::SSL::SSLSocket.new(TCPSocket.new(url, port))
+      socket = ssl_class.new(TCPSocket.new(url, port))
       socket.connect
       socket
+    end
+
+    def ssl_class
+      OpenSSL::SSL::SSLSocket
     end
   end
 end

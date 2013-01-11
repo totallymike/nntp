@@ -18,13 +18,7 @@ module NNTP
     end
 
     def groups
-      group_list = []
-      connection.query :list do |status, list|
-        list.each do |group|
-          group_list << group_from_list(group)
-        end if status[:code] == 215
-      end
-      group_list
+      @groups ||= fetch_groups
     end
 
     def group=(group_name)
@@ -97,6 +91,16 @@ module NNTP
       name = args[0]
       low, high, num = args[1..-1].map { |arg| arg.to_i }
       NNTP::Group.new(name, low, high, num)
+    end
+
+    def fetch_groups
+      group_list = []
+      connection.query :list do |status, list|
+        list.each do |group|
+          group_list << group_from_list(group)
+        end if status[:code] == 215
+      end
+      group_list
     end
   end
 end
