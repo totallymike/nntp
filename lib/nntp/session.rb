@@ -82,7 +82,7 @@ module NNTP
     end
 
     def check_initial_status
-      raise "#{status}" if [400, 502].include? status.code
+      raise "#{status}" if [400, 502].include? connection.get_status.code
     end
 
     def group_from_list(group_string)
