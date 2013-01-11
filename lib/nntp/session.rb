@@ -9,6 +9,7 @@ module NNTP
       @connection = options.fetch(:connection) do
         raise ArgumentError ":connection missing"
       end
+      check_initial_status
     end
 
     def auth(args)
@@ -27,7 +28,7 @@ module NNTP
     end
 
     def group=(group_name)
-      status = connection.command(:group, group_name)
+      connection.command(:group, group_name)
       if status[:code] == 211
         num, low, high, name = status[:msg].split
         @group = group_factory(name, low.to_i, high.to_i, num.to_i)
@@ -63,18 +64,25 @@ module NNTP
       subjects
     end
 
+    def status
+      connection.status
+    end
+
     def quit
       connection.quit
     end
-
     private
     def standard_auth(args)
-      status = connection.command(:authinfo, "USER #{args[:user]}")
+      connection.command(:authinfo, "USER #{args[:user]}")
       if status[:code] == 381
         connection.command(:authinfo, "PASS #{args[:pass]}")
       elsif [281, 482, 502].include? status[:code]
         status
       end
+    end
+
+    def check_initial_status
+      raise "#{status}" if [400, 502].include? status.code
     end
 
     def group_from_list(group_string)

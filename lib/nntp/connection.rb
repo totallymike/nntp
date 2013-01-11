@@ -3,7 +3,8 @@ require 'nntp/status'
 
 module NNTP
   class Connection
-    attr_reader :socket
+    attr_reader :socket, :status
+
     def initialize(options)
       @socket = build_socket(options)
     end
@@ -23,6 +24,11 @@ module NNTP
       command += " #{arguments}" if arguments
       send_message(command)
       get_status
+    end
+
+    def get_status
+      code, message = get_line.split(' ', 2)
+      @status = status_factory(code.to_i, message)
     end
 
     def quit
@@ -61,13 +67,8 @@ module NNTP
       data
     end
 
-    def get_status
-      code, message = get_line.split(' ', 2)
-      status.new(code.to_i, message)
-    end
-
-    def status
-      NNTP::Status
+    def status_factory(*args)
+      NNTP::Status.new(*args)
     end
   end
 end

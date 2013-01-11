@@ -9,6 +9,12 @@ describe NNTP::Session do
     it "will raise ArgumentError if no connection is found" do
       expect { NNTP::Session.new() }.to raise_error(ArgumentError)
     end
+
+    it "raises an error if the server presents an error message on connection" do
+      NNTP::Session.any_instance.unstub(:check_initial_status)
+      sock.stub(:gets) { "502 Permanently unavailable\r\n" }
+      expect { NNTP.open(:socket => sock) }.to raise_error
+    end
   end
 
   describe "authorization" do

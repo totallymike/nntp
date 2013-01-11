@@ -3,6 +3,7 @@ require "nntp"
 require 'openssl'
 
 describe "NNTP" do
+
   describe "::open" do
     let(:sock) { double() }
 
