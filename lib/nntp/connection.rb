@@ -13,7 +13,11 @@ module NNTP
       command = form_message(query, args)
       send_message(command)
       status = get_status
-      data = get_block_data
+      data = if (400..599).include? status.code
+        nil
+      else
+        get_block_data
+      end
       yield status, data if block_given?
       {:status => status, :data => data}
     end
